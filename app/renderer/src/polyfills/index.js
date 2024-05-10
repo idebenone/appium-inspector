@@ -48,7 +48,7 @@
 //     util,
 //   } = import('./electron'));
 // }
-// 
+
 // export {
 //   log,
 //   clipboard,
@@ -66,7 +66,7 @@
 import { clipboard, shell } from 'electron';
 import ipcRenderer from 'electron';
 import remote from 'electron';
-import log from 'electron-log';
+// import log from 'electron-log';
 import settings from 'electron-settings';
 import fs from 'fs';
 import i18NextBackend from 'i18next-fs-backend';
@@ -78,6 +78,8 @@ const i18NextBackendOptions = {
   addPath: path.join(__dirname, '{{lng}}/{{ns}}.json'),
   jsonIndent: 2,
 };
+
+const log = console
 
 export {
   log,

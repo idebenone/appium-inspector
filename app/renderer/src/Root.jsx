@@ -8,11 +8,11 @@ import InspectorPage from './containers/InspectorPage';
 import SessionPage from './containers/SessionPage';
 import {ipcRenderer} from './polyfills';
 
-ipcRenderer.on('appium-language-changed', (event, message) => {
-  if (i18n.language !== message.language) {
-    i18n.changeLanguage(message.language);
-  }
-});
+// ipcRenderer.on('appium-language-changed', (event, message) => {
+//   if (i18n.language !== message.language) {
+//     i18n.changeLanguage(message.language);
+//   }
+// });
 
 const Root = ({store}) => (
   <Provider store={store}>
