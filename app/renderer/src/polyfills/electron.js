@@ -1,4 +1,6 @@
-import {clipboard, ipcRenderer, remote, shell} from 'electron';
+import { clipboard, shell } from 'electron';
+import ipcRenderer from 'electron';
+import remote from 'electron';
 import log from 'electron-log';
 import settings from 'electron-settings';
 import fs from 'fs';

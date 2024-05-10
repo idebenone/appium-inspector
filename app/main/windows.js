@@ -1,12 +1,12 @@
-import {BrowserWindow, Menu, dialog, ipcMain, webContents} from 'electron';
+import { BrowserWindow, Menu, dialog, ipcMain, webContents } from 'electron'
+import { join } from 'path'
+import i18n from '../configs/i18next.config'
+import { openFilePath } from './main'
+import settings from '../shared/settings'
+import { APPIUM_SESSION_EXTENSION } from './helpers'
+import { rebuildMenus } from './menus'
 
-import i18n from '../configs/i18next.config';
-import {openFilePath} from './main';
-import settings from '../shared/settings';
-import {APPIUM_SESSION_EXTENSION} from './helpers';
-import {rebuildMenus} from './menus';
-
-let mainWindow = null;
+let mainWindow = null
 
 function buildSplashWindow() {
   return new BrowserWindow({
@@ -14,8 +14,8 @@ function buildSplashWindow() {
     height: 300,
     minWidth: 300,
     minHeight: 300,
-    frame: false,
-  });
+    frame: false
+  })
 }
 
 function buildSessionWindow() {
@@ -27,78 +27,82 @@ function buildSessionWindow() {
     minHeight: 710,
     titleBarStyle: 'hiddenInset',
     webPreferences: {
+      preload: join(__dirname, '../preload/preload.mjs'),
+      sandbox: false,
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
-      additionalArguments: openFilePath ? [`filename=${openFilePath}`] : [],
-    },
-  });
+      additionalArguments: openFilePath ? [`filename=${openFilePath}`] : []
+    }
+  })
 
   ipcMain.on('save-file-as', async () => {
-    const {canceled, filePath} = await dialog.showSaveDialog(mainWindow, {
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
       title: 'Save Appium File',
-      filters: [{name: 'Appium Session Files', extensions: [APPIUM_SESSION_EXTENSION]}],
-    });
+      filters: [{ name: 'Appium Session Files', extensions: [APPIUM_SESSION_EXTENSION] }]
+    })
     if (!canceled) {
-      mainWindow.webContents.send('save-file', filePath);
+      mainWindow.webContents.send('save-file', filePath)
     }
-  });
+  })
 
-  return window;
+  return window
 }
 
-export function setupMainWindow({splashUrl, mainUrl, isDev}) {
-  const splashWindow = buildSplashWindow();
-  mainWindow = buildSessionWindow();
+export function setupMainWindow({ splashUrl, mainUrl, isDev }) {
+  const splashWindow = buildSplashWindow()
+  mainWindow = buildSessionWindow()
 
-  splashWindow.loadURL(splashUrl);
-  splashWindow.show();
+  splashWindow.loadURL(splashUrl)
+  splashWindow.show()
 
-  mainWindow.loadURL(mainUrl);
+  mainWindow.loadURL(mainUrl)
 
   mainWindow.webContents.on('did-finish-load', () => {
-    splashWindow.destroy();
-    mainWindow.show();
-    mainWindow.focus();
+    // splashWindow.destroy()
+    mainWindow.show()
+    mainWindow.focus()
 
     if (isDev) {
-      mainWindow.openDevTools();
+      mainWindow.openDevTools()
     }
-  });
+  })
+
+  mainWindow.show()
 
   mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+    mainWindow = null
+  })
 
   mainWindow.webContents.on('context-menu', (e, props) => {
-    const {x, y} = props;
+    const { x, y } = props
 
     Menu.buildFromTemplate([
       {
         label: i18n.t('Inspect element'),
         click() {
-          mainWindow.inspectElement(x, y);
-        },
-      },
-    ]).popup(mainWindow);
-  });
+          mainWindow.inspectElement(x, y)
+        }
+      }
+    ]).popup(mainWindow)
+  })
 
   i18n.on('languageChanged', async (languageCode) => {
-    rebuildMenus(mainWindow, isDev);
-    await settings.set('PREFERRED_LANGUAGE', languageCode);
+    rebuildMenus(mainWindow, isDev)
+    await settings.set('PREFERRED_LANGUAGE', languageCode)
     webContents.getAllWebContents().forEach((wc) => {
       wc.send('appium-language-changed', {
-        language: languageCode,
-      });
-    });
-  });
+        language: languageCode
+      })
+    })
+  })
 
-  rebuildMenus(mainWindow, isDev);
+  rebuildMenus(mainWindow, isDev)
 }
 
 export function launchNewSessionWindow() {
-  const url = `file://${__dirname}/index.html`;
-  const win = buildSessionWindow();
-  win.loadURL(url);
-  win.show();
+  const url = join(__dirname, "../../app/renderer/splash.html")
+  const win = buildSessionWindow()
+  win.loadURL(url)
+  win.show()
 }

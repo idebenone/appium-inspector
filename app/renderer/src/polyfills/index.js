@@ -33,7 +33,7 @@ if (buildForBrowser()) {
     i18NextBackendOptions,
     fs,
     util,
-  } = require('./browser'));
+  } = await import('./browser'));
 } else {
   ({
     log,
@@ -46,7 +46,7 @@ if (buildForBrowser()) {
     i18NextBackendOptions,
     fs,
     util,
-  } = require('./electron'));
+  } = await import('./electron'));
 }
 
 export {

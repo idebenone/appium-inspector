@@ -1,30 +1,39 @@
-import {app} from 'electron';
+import { app, BrowserWindow } from 'electron'
+import { optimizer } from '@electron-toolkit/utils'
+import { join } from 'path'
 
-import {installExtensions} from './debug';
-import {getAppiumSessionFilePath} from './helpers';
-import {setupMainWindow} from './windows';
+import { installExtensions } from './debug.js'
+import { getAppiumSessionFilePath } from './helpers.js'
+import { setupMainWindow } from './windows.js'
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.NODE_ENV === 'development'
 
-export let openFilePath = getAppiumSessionFilePath(process.argv, app.isPackaged, isDev);
+export let openFilePath = getAppiumSessionFilePath(process.argv, app.isPackaged, isDev)
 
-app.on('open-file', (event, filePath) => {
-  openFilePath = filePath;
-});
+function createWindow() {
+  if (isDev) {
+    require('electron-debug')()
+    installExtensions()
+  }
+  setupMainWindow({
+    mainUrl: process.env.ELECTRON_RENDERER_URL,
+    splashUrl: join(__dirname, "../../app/renderer/splash.html"),
+    isDev
+  })
+}
+
+app.whenReady().then(() => {
+  app.on('browser-window-created', (_, window) => {
+    optimizer.watchWindowShortcuts(window)
+  })
+  createWindow()
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+})
 
 app.on('window-all-closed', () => {
-  app.quit();
-});
-
-app.on('ready', async () => {
-  if (isDev) {
-    require('electron-debug')();
-    await installExtensions();
+  if (process.platform !== 'darwin') {
+    app.quit()
   }
-
-  setupMainWindow({
-    mainUrl: `file://${__dirname}/index.html`,
-    splashUrl: `file://${__dirname}/splash.html`,
-    isDev,
-  });
-});
+})

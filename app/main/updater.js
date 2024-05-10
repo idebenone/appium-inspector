@@ -1,7 +1,8 @@
-import {dialog} from 'electron';
-import {autoUpdater} from 'electron-updater';
+import { dialog } from 'electron';
+import pkg from 'electron-updater';
+const { autoUpdater } = pkg;
 
-import {t} from './helpers';
+import { t } from './helpers';
 
 const RELEASES_LINK = 'https://github.com/appium/appium-inspector/releases';
 
@@ -9,7 +10,7 @@ autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
 autoUpdater.on('error', (error) => {
-  dialog.showErrorBox(t('Could not download update'), t('updateDownloadFailed', {message: error}));
+  dialog.showErrorBox(t('Could not download update'), t('updateDownloadFailed', { message: error }));
 });
 
 autoUpdater.on('update-not-available', () => {
@@ -21,13 +22,13 @@ autoUpdater.on('update-not-available', () => {
   });
 });
 
-autoUpdater.on('update-available', async ({version, releaseDate}) => {
+autoUpdater.on('update-available', async ({ version, releaseDate }) => {
   const pubDate = new Date(releaseDate).toDateString();
-  const {response} = await dialog.showMessageBox({
+  const { response } = await dialog.showMessageBox({
     type: 'info',
-    message: t('appiumIsAvailable', {name: version}),
+    message: t('appiumIsAvailable', { name: version }),
     buttons: [t('Install Now'), t('Install Later')],
-    detail: t('updateDetails', {pubDate, notes: RELEASES_LINK}),
+    detail: t('updateDetails', { pubDate, notes: RELEASES_LINK }),
   });
   if (response === 0) {
     // download is started without waiting for the dialog box to be dismissed
@@ -40,12 +41,12 @@ autoUpdater.on('update-available', async ({version, releaseDate}) => {
   }
 });
 
-autoUpdater.on('update-downloaded', async ({releaseName}) => {
-  const {response} = await dialog.showMessageBox({
+autoUpdater.on('update-downloaded', async ({ releaseName }) => {
+  const { response } = await dialog.showMessageBox({
     type: 'info',
     buttons: [t('Restart Now'), t('Later')],
     message: t('Update Downloaded'),
-    detail: t('updateIsDownloaded', {releaseName}),
+    detail: t('updateIsDownloaded', { releaseName }),
   });
   if (response === 0) {
     autoUpdater.quitAndInstall();
