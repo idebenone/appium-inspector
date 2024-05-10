@@ -1,5 +1,4 @@
-import { app, BrowserWindow } from 'electron'
-import { optimizer } from '@electron-toolkit/utils'
+import { app } from 'electron'
 import { join } from 'path'
 
 import { installExtensions } from './debug.js'
@@ -22,18 +21,14 @@ function createWindow() {
   })
 }
 
-app.whenReady().then(() => {
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
-  createWindow()
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
+app.on('open-file', (event, filePath) => {
+  openFilePath = filePath;
+});
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+  app.quit();
+});
+
+app.on('ready', async () => {
+  createWindow()
+});

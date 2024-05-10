@@ -27,25 +27,24 @@ function buildSessionWindow() {
     minHeight: 710,
     titleBarStyle: 'hiddenInset',
     webPreferences: {
-      preload: join(__dirname, '../preload/preload.mjs'),
+      preload: join(__dirname, '../preload/preload.cjs'),
       sandbox: false,
       nodeIntegration: true,
-      contextIsolation: false,
       enableRemoteModule: true,
+      contextIsolation: false,
       additionalArguments: openFilePath ? [`filename=${openFilePath}`] : []
     }
   })
 
-  ipcMain.on('save-file-as', async () => {
-    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
-      title: 'Save Appium File',
-      filters: [{ name: 'Appium Session Files', extensions: [APPIUM_SESSION_EXTENSION] }]
-    })
-    if (!canceled) {
-      mainWindow.webContents.send('save-file', filePath)
-    }
-  })
-
+  // ipcMain.on('save-file-as', async () => {
+  //   const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+  //     title: 'Save Appium File',
+  //     filters: [{ name: 'Appium Session Files', extensions: [APPIUM_SESSION_EXTENSION] }]
+  //   })
+  //   if (!canceled) {
+  //     mainWindow.webContents.send('save-file', filePath)
+  //   }
+  // })
   return window
 }
 
@@ -59,7 +58,7 @@ export function setupMainWindow({ splashUrl, mainUrl, isDev }) {
   mainWindow.loadURL(mainUrl)
 
   mainWindow.webContents.on('did-finish-load', () => {
-    // splashWindow.destroy()
+    splashWindow.destroy()
     mainWindow.show()
     mainWindow.focus()
 
