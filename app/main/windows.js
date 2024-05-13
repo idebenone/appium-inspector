@@ -36,15 +36,15 @@ function buildSessionWindow() {
     }
   })
 
-  // ipcMain.on('save-file-as', async () => {
-  //   const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
-  //     title: 'Save Appium File',
-  //     filters: [{ name: 'Appium Session Files', extensions: [APPIUM_SESSION_EXTENSION] }]
-  //   })
-  //   if (!canceled) {
-  //     mainWindow.webContents.send('save-file', filePath)
-  //   }
-  // })
+  ipcMain.on('save-file-as', async () => {
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+      title: 'Save Appium File',
+      filters: [{ name: 'Appium Session Files', extensions: [APPIUM_SESSION_EXTENSION] }]
+    })
+    if (!canceled) {
+      mainWindow.webContents.send('save-file', filePath)
+    }
+  })
   return window
 }
 

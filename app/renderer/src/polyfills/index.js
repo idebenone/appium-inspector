@@ -65,8 +65,8 @@
 
 import { clipboard, shell } from 'electron';
 import ipcRenderer from 'electron';
-import remote from 'electron';
-// import log from 'electron-log';
+import remote from '@electron/remote/main';
+// import { log as log2 } from 'electron-log';
 import settings from 'electron-settings';
 import fs from 'fs';
 import i18NextBackend from 'i18next-fs-backend';

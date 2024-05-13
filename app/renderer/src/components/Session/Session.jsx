@@ -80,8 +80,8 @@ const Session = (props) => {
         getRunningSessions();
         initFromQueryString(loadNewSession);
         await setStateFromAppiumFile();
-        ipcRenderer.on('open-file', (_, filePath) => setStateFromAppiumFile(filePath));
-        ipcRenderer.on('save-file', (_, filePath) => saveFile(filePath));
+        ipcRenderer.ipcRenderer.on('open-file', (_, filePath) => setStateFromAppiumFile(filePath));
+        ipcRenderer.ipcRenderer.on('save-file', (_, filePath) => saveFile(filePath));
       } catch (e) {
         console.error(e); // eslint-disable-line no-console
       }
